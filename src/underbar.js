@@ -182,9 +182,9 @@
   //          No accumulator is given so the first element is used.
   
   _.reduce = function(collection, iterator, accumulator) {
+    //isArray
     if (Array.isArray(collection)){
      //first case
-     //isArray
       if (arguments.length < 3) { 
         var accumulator = collection[0];
       } else {
