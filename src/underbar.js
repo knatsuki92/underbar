@@ -7,6 +7,7 @@
   // seem very useful, but remember it--if a function needs to provide an
   // iterator when the user does not pass one in, this will be handy.
   _.identity = function(val) {
+    return val;
   };
 
   /**
@@ -37,6 +38,9 @@
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
+    var lastEl = array.length - 1;
+    return (n === undefined) ? array[lastEl] : 
+                                              (n === 0) ? [] : array.slice(-n);
   };
 
   // Call iterator(value, key, collection) for each element of collection.
@@ -45,6 +49,16 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
+    if (Array.isArray(collection)) {
+      for (var i=0; i<collection.length; i++){
+        iterator(collection[i], i, collection);
+      }
+    } else {
+      for (var el in collection){
+        iterator(collection[el], el, collection);
+      }
+    }
+
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -66,16 +80,51 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
+    var returnArray = [];
+
+    for(var i = 0; i < collection.length; i++){
+        if (test(collection[i])) {
+          returnArray.push(collection[i]);
+        }
+    }
+
+    return returnArray;
+
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
+    return _.filter(collection, function(el){
+      return !test(el);
+    });
+    
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
+    var uniqArray = [array[0]],
+        arrayLength = array.length; //initialize 
+    
+    if (arrayLength > 1){
+      for (var i = 1; i < arrayLength; i++){
+        //check if duplicate
+        var isDupl = false;
+        for (var j = 0; j < uniqArray.length; j++){
+          if (array[i] === uniqArray[j]) {
+            isDupl = true;
+            break;
+          }
+        }
+        //push if false
+        if (isDupl === false){
+          uniqArray.push(array[i]);
+        }
+      }
+    }
+
+    return uniqArray;
   };
 
 
@@ -84,6 +133,13 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+    var mapArray = [];
+    for (var i = 0, collecLength = collection.length; i < collecLength; i++){
+      mapArray.push(iterator(collection[i]));
+    }
+
+    return mapArray;
+
   };
 
   /*
@@ -124,8 +180,57 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
+  
   _.reduce = function(collection, iterator, accumulator) {
-  };
+    if (Array.isArray(collection)){
+     //first case
+     //isArray
+      if (arguments.length < 3) { 
+        var accumulator = collection[0];
+      } else {
+        accumulator = iterator(accumulator, collection[0]);
+      }
+
+      for (var i = 1, collecLength = collection.length; i < collecLength; i++){
+        accumulator = iterator(accumulator, collection[i]);
+      } 
+    } else {
+    //isObject
+      var index = 0;
+      for (var el in collection){
+        if (index === 0){
+
+          var accumulator = (arguments.length < 3) ? collection[el] : iterator(arguments[2], collection[el]);
+          index++;
+          continue;
+        }
+        accumulator = iterator(accumulator, collection[el]);
+      }
+    }
+ 
+
+    return accumulator;
+  
+  /*
+  This bottom version fails to take account for the case for an array where we only want to iterate over numeric properties. The for-in loop
+  iterates over both numeric and non-numeric properties.
+
+    var index = 0;
+      for (var el in collection){
+                console.log(collection[el]);
+        if (index === 0){
+
+          var accumulator = (arguments.length < 3) ? collection[el] : iterator(arguments[2], collection[el]);
+          index++;
+          console.log(accumulator);
+          continue;
+        }
+        accumulator = iterator(accumulator, collection[el]);
+      }
+  return accumulator;
+*/
+};
+  
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
@@ -143,6 +248,24 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    var numArg = arguments.length; //used for no-callback case
+
+    return _.reduce(collection, function(isTrue, item){
+      if (!isTrue) return false;
+      
+      //case: no callback
+      if (numArg < 2){
+        iterator = _.identity;
+      }
+
+      //case: empty collection [] and {}
+      if (JSON.stringify(collection) === "[]" || JSON.stringify(collection) === "{}"){
+        return true;
+      }
+
+      return !!iterator(item);  //use !! to accomodate for no-callback case. 
+    }, true);
+
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
