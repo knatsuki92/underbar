@@ -370,6 +370,26 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    //history variables stored in closure scope.
+    var argHist = [], resultHist = [];
+
+    return function(){
+      var arg = arguments[0], 
+          argIndex = _.indexOf(argHist, arg),
+          result;
+
+      if(argIndex !== -1){
+        return resultHist[argIndex];
+      } 
+      //if the argument isn't found
+      result = func.apply(this, arguments);
+      //add to history variables.
+      argHist.push(arg);
+      resultHist.push(result);
+
+      return result;
+    };
+
   };
 
   // Delays a function for the given number of milliseconds, and then calls
