@@ -316,6 +316,17 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var numArg = arguments.length,
+        ExtendedObj = obj;
+
+    for(var i = 1; i < numArg; i++){
+      for (var j in arguments[i]){
+       if(ExtendedObj[j] === undefined){
+        ExtendedObj[j] = arguments[i][j];           
+       }
+      }
+    }
+    return ExtendedObj;
   };
 
 
