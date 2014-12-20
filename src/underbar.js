@@ -398,7 +398,48 @@
   // The arguments for the original function are passed after the wait
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
+  
+  /*
+  //why doesn't this work?
   _.delay = function(func, wait) {
+
+
+    //preliminary version I thought of off top of my head. There might be a better way
+    //to do this.
+
+    var startTime = new Date().valueOf(),
+        endTime = startTime + wait,
+        currentTime = startTime,
+        funcArg = [];
+
+        //debug
+        console.log(startTime);
+        console.log(endTime);
+        console.log(currentTime);
+
+    
+    for(var i = 2; i < arguments.length; i++){
+      funcArg.push(arguments[i]);
+    }
+
+    while (currentTime < endTime) { //keep this loop running until currentTime reaches endTime.
+      currentTime = new Date().valueOf();
+
+    }
+  
+    return func.apply(this, funcArg);
+  };
+  */
+  //using setTimeout()
+  _.delay = function(func, wait) {
+
+    var funcArg = [];
+    
+    for(var i = 2; i < arguments.length; i++){
+      funcArg.push(arguments[i]);
+    }
+
+    return setTimeout(func.apply(this, funcArg), wait);
   };
 
 
@@ -412,10 +453,28 @@
   // TIP: This function's test suite will ask that you not modify the original
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
-  _.shuffle = function(array) {
+
+  //note to self: look into how arrays are stored in memory.
+  //Ex. var x = [1,2], y = [1,2]; isn't equivalent to var x = [1,2], y = x;
+_.shuffle = function(array) {
+  var origArray = array.slice(),
+      dummyArray,
+      shuffledArray,
+      randIndex;
+  do{    
+      dummyArray = origArray.slice(); 
+      shuffledArray = [];
+
+    for(var i = 0; i < origArray.length; i++){
+      randIndex = Math.floor(Math.random() * dummyArray.length);
+      shuffledArray.push(dummyArray[randIndex]);
+      dummyArray.splice(randIndex,randIndex);
+    }
+  } while(origArray === shuffledArray)
+  console.log(array);
+  console.log(shuffledArray);
+  return shuffledArray;
   };
-
-
   /**
    * EXTRA CREDIT
    * =================
