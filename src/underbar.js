@@ -399,7 +399,7 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   
-  /*
+  
   //why doesn't this work?
   _.delay = function(func, wait) {
 
@@ -407,29 +407,30 @@
     //preliminary version I thought of off top of my head. There might be a better way
     //to do this.
 
-    var startTime = new Date().valueOf(),
+    var startTime = Date.now().valueOf(),
         endTime = startTime + wait,
         currentTime = startTime,
         funcArg = [];
 
         //debug
         console.log(startTime);
-        console.log(endTime);
+        //console.log(endTime);
         console.log(currentTime);
 
     
     for(var i = 2; i < arguments.length; i++){
       funcArg.push(arguments[i]);
     }
-
+  /*
     while (currentTime < endTime) { //keep this loop running until currentTime reaches endTime.
-      currentTime = new Date().valueOf();
-
+      currentTime = Date.now().valueOf();
+      console.log(currentTime);
     }
-  
+  */
     return func.apply(this, funcArg);
   };
-  */
+
+  /*
   //using setTimeout()
   _.delay = function(func, wait) {
 
@@ -441,7 +442,7 @@
 
     return setTimeout(func.apply(this, funcArg), wait);
   };
-
+  */
 
   /**
    * ADVANCED COLLECTION OPERATIONS
@@ -461,7 +462,7 @@ _.shuffle = function(array) {
       dummyArray,
       shuffledArray,
       randIndex;
-  do{    
+  do{ //repeats until it's shuffled.    
       dummyArray = origArray.slice(); 
       shuffledArray = [];
 
@@ -471,8 +472,7 @@ _.shuffle = function(array) {
       dummyArray.splice(randIndex,randIndex);
     }
   } while(origArray === shuffledArray)
-  console.log(array);
-  console.log(shuffledArray);
+
   return shuffledArray;
   };
   /**
@@ -501,6 +501,32 @@ _.shuffle = function(array) {
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    //enforcing all inputs to be array.
+    if(_.every(arguments, function(x){return Array.isArray(x);})){
+        var zippedArray = [],
+            maxLength = 0;
+        //1st determine the max length of the input arrays.
+        for(var i = 0; i < arguments.length; i++){
+          maxLength = (arguments[i].length >= maxLength) ? arguments[i].length : maxLength;
+        }
+        //2nd populate zippedArray
+        for(var j= 0; j < maxLength; j++){
+          var jthArray = [];
+
+          for(var i = 0; i < arguments.length; i++){
+            jthArray.push(arguments[i][j]);
+          }
+
+          zippedArray.push(jthArray);
+        }
+
+
+        return zippedArray;        
+    } else{
+      console.log("_.zip() doesn't accept non-array arguments.")
+    }
+
+  
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
