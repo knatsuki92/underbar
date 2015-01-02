@@ -398,14 +398,26 @@
   // The arguments for the original function are passed after the wait
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
-  
-  
-  //why doesn't this work?
+
+   //using setTimeout()
   _.delay = function(func, wait) {
 
+    var funcArg = [];
+    
+    for(var i = 2; i < arguments.length; i++){
+      funcArg.push(arguments[i]);
+    }
 
-    //preliminary version I thought of off top of my head. There might be a better way
-    //to do this.
+    setTimeout(function(){console.log(wait + "ms elapsed");}, wait);
+
+    return func.apply(this, funcArg);
+  };
+  
+  
+  /*
+  //preliminary version I thought of that doesn't use setTimeout(). It apparently conflicts with the 
+  //sinon.js plugin and doesn't work for the code test.
+  _.delay = function(func, wait) {
 
     var startTime = Date.now().valueOf(),
         endTime = startTime + wait,
@@ -421,28 +433,16 @@
     for(var i = 2; i < arguments.length; i++){
       funcArg.push(arguments[i]);
     }
-  /*
     while (currentTime < endTime) { //keep this loop running until currentTime reaches endTime.
       currentTime = Date.now().valueOf();
       console.log(currentTime);
     }
-  */
+ 
     return func.apply(this, funcArg);
   };
-
-  /*
-  //using setTimeout()
-  _.delay = function(func, wait) {
-
-    var funcArg = [];
-    
-    for(var i = 2; i < arguments.length; i++){
-      funcArg.push(arguments[i]);
-    }
-
-    return setTimeout(func.apply(this, funcArg), wait);
-  };
   */
+  
+ 
 
   /**
    * ADVANCED COLLECTION OPERATIONS
@@ -486,6 +486,14 @@ _.shuffle = function(array) {
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    /*if(arguments.length < 2){
+      //if no functionOrKey is passed
+      _.identity(collection);
+    } else{
+      if 
+
+    }
+  */
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -493,6 +501,23 @@ _.shuffle = function(array) {
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+    /*
+    if(Array.isArray(collection)){
+      var sortedArray =[],
+          valueArray = []; //array storing the return value of iterator.
+      //case 1: iterator is a function
+      if(typeof(iterator) === "function"){
+        for(var i = 0; i < collection.length, i++){
+          valueArray.push(iterator(collection[i]))
+        }
+
+      }
+      //case 2: iterator is a string
+
+    } else{
+      console.log("_.sortBy() cannot sort non-array input");
+    }
+    */
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -512,11 +537,9 @@ _.shuffle = function(array) {
         //2nd populate zippedArray
         for(var j= 0; j < maxLength; j++){
           var jthArray = [];
-
           for(var i = 0; i < arguments.length; i++){
             jthArray.push(arguments[i][j]);
           }
-
           zippedArray.push(jthArray);
         }
 
@@ -534,6 +557,35 @@ _.shuffle = function(array) {
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    //KN: what to do with the 'result' input?
+
+    //Make sure nestedArray is actually an array.
+    if(!Array.isArray(nestedArray)){
+      console.log('Error: input argument must be an array.');
+      return undefined;
+    }
+    var flattenedArray = [],
+        origArray = nestedArray.slice();
+
+    //function pushFirst()
+    //description: Array.shift() the first non-array element in origArray and Array.push() into flattenedArray. 
+    //It uses a recursive technique to dig through all elements contained within a nested array.
+    var pushFirst = function(flattenedArray, origArray){
+      if(origArray.length > 0){
+        var child = origArray.shift();
+        if(!Array.isArray(child)){
+          flattenedArray.push(child);
+        } else{
+          pushFirst(flattenedArray, child);
+        }
+        pushFirst(flattenedArray, origArray);
+      }    
+    };
+
+    pushFirst(flattenedArray, origArray);
+    return flattenedArray;
+
+
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
