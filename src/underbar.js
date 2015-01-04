@@ -564,6 +564,8 @@ _.shuffle = function(array) {
       console.log('Error: input argument must be an array.');
       return undefined;
     }
+
+
     var flattenedArray = [],
         origArray = nestedArray.slice();
 
@@ -591,6 +593,39 @@ _.shuffle = function(array) {
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var numArrays = arguments.length,
+        allChilds = [],
+        uniqChilds = [],
+        intersectionArray = [];
+    //function that loops through all arrays to see if element is contained.
+    var containAll = function(item){
+      var count = 0;
+      for(var i = 0; i < allChilds.length; i++){
+        if(allChilds[i] === item){
+          count++;
+        }
+      }
+      return (count >= numArrays) ? true : false; 
+    };
+
+    //First, make sure all arguments are array.
+    for(var i = 0; i < numArrays; i++){
+      if(!Array.isArray(arguments[i])){
+        console.log('the ' + i + "th argument isn't an array.");
+        return undefined;
+      }
+      allChilds = allChilds.concat(arguments[i]);
+    }
+
+    uniqChilds = _.uniq(allChilds);
+
+    for(var i = 0; i < uniqChilds.length; i++){
+      if(containAll(uniqChilds[i])){
+        intersectionArray.push(uniqChilds[i]);
+      }
+    }
+    console.log(intersectionArray);
+    return intersectionArray;
   };
 
   // Take the difference between one array and a number of other arrays.
