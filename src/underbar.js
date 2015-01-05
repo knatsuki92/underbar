@@ -594,9 +594,9 @@ _.shuffle = function(array) {
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
     var numArrays = arguments.length,
-        allChilds = [],
-        uniqChilds = [],
-        intersectionArray = [];
+        allChilds = [], //include repeats
+        uniqChilds = [], //unique
+        intersectionArray = []; //output array
     //function that loops through all arrays to see if element is contained.
     var containAll = function(item){
       var count = 0;
@@ -608,29 +608,56 @@ _.shuffle = function(array) {
       return (count >= numArrays) ? true : false; 
     };
 
-    //First, make sure all arguments are array.
+    //Error handler to make sure all inputs are array.
     for(var i = 0; i < numArrays; i++){
       if(!Array.isArray(arguments[i])){
         console.log('the ' + i + "th argument isn't an array.");
         return undefined;
       }
+      //construct allChilds
       allChilds = allChilds.concat(arguments[i]);
     }
-
+    //construct uniqChilds using _.uniq()
     uniqChilds = _.uniq(allChilds);
 
+    //push to intersectionArray if containAll(item) returns true.
     for(var i = 0; i < uniqChilds.length; i++){
       if(containAll(uniqChilds[i])){
         intersectionArray.push(uniqChilds[i]);
       }
     }
-    console.log(intersectionArray);
     return intersectionArray;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    var numArrays = arguments.length,
+        firstArray = array,
+        restArray = [],
+        differenceArray = [];
+    //Error handler to make sure all inputs are array.
+      if(!Array.isArray(array)){
+      console.log("the first argument isn't an array.");
+      return undefined;
+      }
+
+    for(var i = 1; i < numArrays; i++){
+      if(!Array.isArray(arguments[i])){
+        console.log('the ' + i + "th argument isn't an array.");
+        return undefined;
+      }
+    //construct restArray
+      restArray = restArray.concat(arguments[i]);
+    }
+    
+    //construct the output array 'differenceArray'
+    for(var i = 0; i < firstArray.length; i++){
+      if(!_.contains(restArray, firstArray[i])){
+        differenceArray.push(firstArray[i]);
+      }
+    }
+    return differenceArray;
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
