@@ -408,9 +408,10 @@
       funcArg.push(arguments[i]);
     }
 
-    setTimeout(function(){console.log(wait + "ms elapsed");}, wait);
+    setTimeout(function(){
+        return func.apply(this, funcArg);
+    }, wait);
 
-    return func.apply(this, funcArg);
   };
   
   
