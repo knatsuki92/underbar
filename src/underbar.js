@@ -463,6 +463,23 @@ _.shuffle = function(array) {
       dummyArray,
       shuffledArray,
       randIndex;
+
+  var notShuffled = function(x,y){
+    var yes = true;
+
+    if(x.length !== y.length){
+      yes = undefined; //returns undefined if arrays aren't same length.
+    }
+    else{
+      for(var i = 0; i< x.length; x++){
+        if(x[i] !== y[i]){
+          yes = false;
+        }
+      }
+    } 
+    return yes;
+  };
+
   do{ //repeats until it's shuffled.    
       dummyArray = origArray.slice(); 
       shuffledArray = [];
@@ -470,9 +487,9 @@ _.shuffle = function(array) {
     for(var i = 0; i < origArray.length; i++){
       randIndex = Math.floor(Math.random() * dummyArray.length);
       shuffledArray.push(dummyArray[randIndex]);
-      dummyArray.splice(randIndex,randIndex);
+      dummyArray.splice(randIndex,1);
     }
-  } while(origArray === shuffledArray)
+  } while(notShuffled(origArray, shuffledArray))
 
   return shuffledArray;
   };
